@@ -1,0 +1,53 @@
+<%- include('partials/header') %>
+<header>
+  <div class="container container-header">
+    <h1>My Book Tracker</h1>
+    <nav>
+      <a href="/add-book" class="btn">Tambah Buku</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Fitur Sorting -->
+  <!-- views/index.ejs -->
+  <div class="sorting">
+    <label for="sort">Urutkan berdasarkan:</label>
+    <select id="sort" onchange="handleSortChange(this.value)">
+      <option value="title-asc">Nama (A-Z)</option>
+      <option value="title-desc">Nama (Z-A)</option>
+      <option value="rating-desc">Rating Tertinggi</option>
+      <option value="rating-asc">Rating Terendah</option>
+      <option value="date-desc">Tanggal Terbaru</option>
+      <option value="date-asc">Tanggal Terlama</option>
+    </select>
+  </div>
+
+  <!-- Daftar Buku -->
+  <div class="book-list">
+    <% books.forEach(book => { %>
+    <div class="book-card">
+      <img src="<%= book.cover_url && book.cover_url !== 'undefined' ? book.cover_url : '/images/default-cover.jpg' %>" alt="<%= book.title %>" />
+      <div class="book-info">
+        <h3><%= book.title %></h3>
+        <p class="author"><%= book.author %></p>
+        <div class="rating">
+          <% for (let i = 1; i <= 5; i++) { %>
+          <i class="fas fa-star <%= i <= book.rating ? 'active' : '' %>"></i>
+          <% } %>
+        </div>
+      </div>
+      <a href="/books/<%= book.id %>" class="btn-detail">Lihat Detail</a>
+    </div>
+    <% }) %>
+  </div>
+</main>
+
+<script>
+  function handleSortChange(sortValue) {
+    // Redirect ke URL yang sama dengan query parameter sort
+    window.location.href = `/?sort=${sortValue}`;
+  }
+</script>
+
+<%- include('partials/footer') %>

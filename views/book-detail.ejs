@@ -1,0 +1,58 @@
+<%- include('partials/header') %>
+
+    <header>
+      <div class="container">
+        <h1>My Book Tracker</h1>
+        <nav>
+          <a href="/" class="btn">Kembali ke Beranda</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="book-detail">
+        <!-- Sampul Buku -->
+        <div class="book-cover">
+          <img src="<%= book.cover_url || '/images/default-cover.jpg' %>" alt="<%= book.title %>" />
+        </div>
+
+        <!-- Informasi Buku -->
+        <div class="book-info-detail">
+          <h2><%= book.title %></h2>
+          <p class="author">By <%= book.author %></p>
+
+          <!-- Rating -->
+          <div class="rating">
+            <% for (let i = 1; i <= 5; i++) { %>
+            <i class="fas fa-star <%= i <= book.rating ? 'active' : '' %>"></i>
+            <% } %>
+          </div>
+
+          <!-- Review -->
+          <% if (book.review) { %>
+          <div class="review">
+            <h3>Review:</h3>
+            <p><%= book.review %></p>
+          </div>
+          <% } %>
+
+          <!-- Tanggal Selesai Membaca -->
+          <% if (book.finish_date) { %>
+          <div class="finish-date">
+            <h3>Tanggal Selesai Membaca:</h3>
+            <p><%= new Date(book.finish_date).toLocaleDateString() %></p>
+          </div>
+          <% } %>
+
+          <!-- Tombol Aksi -->
+          <div class="actions">
+            <a href="/books/<%= book.id %>/edit" class="btn-edit">Edit</a>
+            <form action="/books/<%= book.id %>/delete" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus buku ini?');">
+              <button type="submit" class="btn-delete">Hapus</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+
+<%- include('partials/footer') %>
