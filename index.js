@@ -2,19 +2,21 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import axios from 'axios';
 import pg from 'pg';
+import env from 'dotenv';
 
 const app = express();
 const port = 3000;
+env.config();
 
 app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = new pg.Client({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'booktracker',
-  password: '123',
-  port: 5432,
+  user: process.env.PG_USER,
+  host:  process.env.PG_HOST,
+  database:  process.env.PG_DB,
+  password:  process.env.PG_PASS,
+  port:  process.env.PG_PORT,
 });
 
 db.connect();
@@ -35,39 +37,39 @@ async function getCoverAPI(title) {
 }
 
 app.get('/', async (req, res) => {
-    try {
-        const sort = req.query.sort || 'title-asc'; // Default sorting: Nama (A-Z)
-    
-        let orderBy;
-        switch (sort) {
-          case 'title-asc':
-            orderBy = 'title ASC';
-            break;
-          case 'title-desc':
-            orderBy = 'title DESC';
-            break;
-          case 'rating-desc':
-            orderBy = 'rating DESC';
-            break;
-          case 'rating-asc':
-            orderBy = 'rating ASC';
-            break;
-          case 'date-desc':
-            orderBy = 'finish_date DESC';
-            break;
-          case 'date-asc':
-            orderBy = 'finish_date ASC';
-            break;
-          default:
-            orderBy = 'title ASC';
-        }
-    
-        const books = await db.query(`SELECT * FROM books ORDER BY ${orderBy}`);
-        res.render('index.ejs', { books: books.rows, sort });
-      } catch (error) {
-        console.log(error.message);
-        res.status(500).send("Terjadi kesalahan saat mengambil data buku.");
-      }
+  try {
+    const sort = req.query.sort || 'title-asc'; // Default sorting: Nama (A-Z)
+
+    let orderBy;
+    switch (sort) {
+      case 'title-asc':
+        orderBy = 'title ASC';
+        break;
+      case 'title-desc':
+        orderBy = 'title DESC';
+        break;
+      case 'rating-desc':
+        orderBy = 'rating DESC';
+        break;
+      case 'rating-asc':
+        orderBy = 'rating ASC';
+        break;
+      case 'date-desc':
+        orderBy = 'finish_date DESC';
+        break;
+      case 'date-asc':
+        orderBy = 'finish_date ASC';
+        break;
+      default:
+        orderBy = 'title ASC';
+    }
+
+    const books = await db.query(`SELECT * FROM books ORDER BY ${orderBy}`);
+    res.render('index.ejs', { books: books.rows, sort });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send('Terjadi kesalahan saat mengambil data buku.');
+  }
 });
 
 app.get('/add-book', (req, res) => {
@@ -127,7 +129,6 @@ app.post('/books/:id/delete', async (req, res) => {
 
   res.redirect('/');
 });
-
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
